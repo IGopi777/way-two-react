@@ -1,0 +1,32 @@
+{
+  "name": "way-two-react",
+  "version": "1.0.0",
+  "description": "70 ways for FSD.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IGopi777/way-two-react.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IGopi777/way-two-react/issues"
+  },
+  "homepage": "https://github.com/IGopi777/way-two-react#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "json": "^9.0.6",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.3.10",
+    "nodemon": "^1.18.6",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^10.9.0"
+  }
+}
