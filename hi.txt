@@ -1,0 +1,44 @@
+procedure del(table_name in varchar2, p_id in number) as
+parent_table_name varchar2 := table_name;
+parent_table_id number := p_id;
+patent_table_p_cons_name varchar2;
+parent_table_p_cons_name_dummy varchar2;
+counter number := 1;
+r_constraint_exist varchar2;
+TYPE crate IS TABLE OF varchar2 INDEX BY VARCHAR2(20); 
+
+begin
+
+select CONSTRAINT_NAME into parent_table_p_cons_name from user_constraints where table_name='T1' and CONSTRAINT_TYPE='P';
+
+
+loop
+
+
+r_constraint_exist := select table_name, contstraint_name into table_name, fkey from user_constraints 
+where R_CONSTRAINT_NAME=parent_table_p_cons_name;
+
+crate(table_name) := fkey;
+
+parent_table_p_cons_name_dummy := parent_table_p_cons_name;
+
+if r_constraint_exist = null then
+select table_name into parent_table_p_cons_name from user_constraints where table_name=parent_table_p_cons_name_dummy and CONSTRAINT_TYPE='P';
+else 
+exit;
+end if;
+
+
+end loop;
+
+
+
+
+end;
+
+
+
+
+
+
+
