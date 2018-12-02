@@ -1,0 +1,224 @@
+create table parent(
+p_id number not null,
+name varchar2(20) not null,
+constraint parent_id_pk primary key(p_id));
+
+
+create table child1(
+c1_id number not null,
+name varchar2(20) not null,
+p_id number not null,
+constraint child1_id_pk primary key (c1_id),
+constraint  p_id_fk1 foreign key (p_id) references parent(p_id));
+
+create table child2(
+c2_id number not null,
+name varchar2(20) not null,
+p_id number not null,
+constraint child2_id_pk primary key (c2_id),
+constraint  p_id_fk2 foreign key(p_id) references parent(p_id));
+
+create table child3(
+c3_id number not null,
+name varchar2(20) not null,
+p_id number not null,
+constraint child1_id_pk primary key (c3_id),
+constraint  p_id_fk3 foreign key(p_id) references parent(p_id));
+
+
+create table gchild1(
+gc1_id number not null,
+name varchar2(20) not null,
+c1_id number not null,
+constraint gchild1_id_pk primary key(gc1_id),
+constraint c1_id_fk1 foreign key (c1_id) references child1(c1_id));
+
+create table gchild2(
+gc2_id number not null,
+name varchar2(20) not null,
+c1_id number not null,
+constraint gchild2_id_pk primary key(gc2_id),
+constraint c1_id_fk2 foreign key (c1_id) references child2(c1_id));
+
+
+create table ggchild1(
+ggc1_id number not null,
+name varchar2(20) not null,
+gc1_id number not null,
+constraint ggchild1_id_pk primary key(ggc1_id),
+constraint gc1_id_fk1 foreign key (gc1_id) references gchild1(c1_id));
+
+
+create table central(
+table_name varchar2(20),
+pk_col varchar2(20),
+fk_col varchar2(20),
+r_table_name varchar2(20),
+r_col_name varchar2(20)
+);
+
+insert into central values('parent', 'p_id', null, null, null);
+insert into central values('child1', 'c1_id', 'p_id', 'parent', 'p_id');
+insert into central values('child2', 'c2_id', 'p_id', 'parent', 'p_id');
+insert into central values('gchild1', 'gc1_id', 'c1_id', 'child1', 'c1_id');
+insert into central values('ggchild1', 'ggc1_id', 'gc1_id', 'gchild1', 'gc1_id');
+
+SELECT CONCAT(LPAD(' ',LEVEL*3),table_name) table_name,LTRIM(SYS_CONNECT_BY_PATH(table_name, '-'), '-') AS path,
+CONNECT_BY_ROOT table_name AS table_name, CONNECT_BY_ISLEAF AS leaf, fk_col, pk_col, level
+FROM central CONNECT BY PRIOR pk_col = fk_col START WITH fk_col IS NULL;
+
+delete from ggchild1
+where (gc1_id) in (select gc1_id from gchild1 
+where (c1_id) in (select c1_id from child1 
+where (p_id) in (select p_id from parent where p_id=1)));
+
+delete from gchild1 
+where (c1_id) in (select c1_id from child1 
+where (p_id) in (select p_id from parent where p_id=1));
+
+delete from child1 
+where (p_id) in (select p_id from parent where p_id=1);
+
+delete from child2
+where (p_id) in (select p_id from parent where p_id=1);
+
+delete from  parent where p_id=1;
+
+delete from ( select * from parent p
+join child1 c on (p.p_id = c.p_id) 
+join gchild1 g on (g.c1_id = c.c1_id) 
+join ggchild1 gg on (gg.gc1_id=g.gc1_id)
+where  p.p_id = 1);
+
+
+
+
+
+
+
+
+
+
+
+create table parent(
+p_id number not null,
+name varchar2(20) not null,
+constraint parent_id_pk primary key(p_id));
+
+insert into parent values(1, 'ntr');
+insert into parent values(2, 'anr');
+insert into parent values(3,'krishna');
+
+select * from parent;
+-------------------------------
+create table child1(
+c1_id number not null,
+name varchar2(20) not null,
+p_id number not null,
+constraint child1_id_pk primary key (c1_id),
+constraint  p_id_fk1 foreign key (p_id) references parent(p_id));
+
+insert into child1 values(1,'harikrishna', 1);
+insert into child1 values(2, 'balakrishna', 1);
+insert into child1 values(3, 'nagarjuna', 2);
+insert into child1 values(4, 'mahesh', 3);
+insert into child1 values(5, 'manjula', 3);
+
+select * from child1;
+--------------------------------------------------------------
+create table child2(
+c2_id number not null,
+name varchar2(20) not null,
+p_id number not null,
+constraint child2_id_pk primary key (c2_id),
+constraint  p_id_fk2 foreign key(p_id) references parent(p_id));
+
+insert into child2 values(1,'ramesh', 3);
+insert into child2 values(2,'purandheswari', 1);
+insert into child2 values(3, 'ramakrishna', 1);
+insert into child2 values(4, 'venkat', 2);
+--------------------------------------------------------------
+create table gchild1(
+gc1_id number not null,
+name varchar2(20) not null,
+c1_id number not null,
+constraint gchild1_id_pk primary key(gc1_id),
+constraint c1_id_fk1 foreign key (c1_id) references child1(c1_id));
+
+insert into gchild1 values(1,'jrntr', 1);
+insert into gchild1 values(2, 'kalyanram', 1);
+insert into gchild1 values(3, 'akhil', 3);
+---------------------------------------------------------------
+create table ggchild1(
+ggc1_id number not null,
+name varchar2(20) not null,
+gc1_id number not null,
+constraint ggchild1_id_pk primary key(ggc1_id),
+constraint gc1_id_fk1 foreign key (gc1_id) references gchild1(gc1_id));
+
+insert into ggchild1 values(1, 'abhay', 1);
+insert into ggchild1 values(2, 'akhilson', 3);
+insert into ggchild1 values(3, 'ayan', 1);
+---------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+declare
+
+CURSOR cur_path IS
+select path,lev, leaf from(
+SELECT LTRIM(SYS_CONNECT_BY_PATH(table_name, '-'), '-') AS path, level as lev, CONNECT_BY_ISLEAF AS leaf
+FROM central CONNECT BY PRIOR pk_col = fk_col START WITH fk_col IS NULL and table_name='parent' )
+where leaf =1;
+
+TYPE path_tbl_type IS TABLE OF cur_path%ROWTYPE INDEX BY PLS_INTEGER;  
+
+path_rec_var   cur_path%ROWTYPE;
+path_tbl_var   path_tbl_type;
+
+idx integer :=0;
+
+BEGIN
+
+OPEN cur_path;
+LOOP
+idx := idx+1;
+FETCH cur_path INTO path_rec_var;
+EXIT WHEN cur_path%notfound;
+path_tbl_var(idx):= path_rec_var;    
+END LOOP;
+CLOSE cur_path;
+
+dbms_output.put_line(path_tbl_var(1).lev);
+
+END;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
